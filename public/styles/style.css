@@ -1,12 +1,16 @@
 :root {
-  --background-color: #fff;
+  --background-color: #eee;
   --foreground-color: #1c1c1c;
+  --display-bg-color: #eef2f7;
+  --key-hover-bg-color: #d1d4d7;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background-color: #1c1c1c;
-    --foreground-color: #fff;
+    --foreground-color: #cacaca;
+    --display-bg-color: #2e2e2e;
+    --key-hover-bg-color: #2c2c2c;
   }
 }
 
@@ -20,6 +24,93 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
   transition: color 0.5s, background-color 0.5s;
+  background-color: var(--display-bg-color);
+  color: var(--foreground-color);
+}
+
+#calc-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  grid-template-rows: 2fr 6fr;
+}
+
+#display-container {
+  background-color: var(--display-bg-color);
+}
+
+#keys-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+}
+
+#part1,
+#part2 {
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+
+#part1 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+#part2 {
+  grid-template-columns: 1fr;
+}
+
+#part1 div,
+#part2 div {
+  border: 1px rgb(96, 96, 96) solid;
+  display: grid;
+  place-content: center;
+  cursor: default;
+  border-radius: 6px;
+}
+
+#part2 div:last-child {
+  grid-row: 4/6;
+  background-color: rgb(179, 0, 176);
+  color: white;
+}
+
+#part2 div:last-child:hover {
+  background-color: rgb(203, 6, 199);
+}
+
+.keys {
+  font-size: 2rem;
+  font-weight: 300;
+  transition: color 0.3s, background-color 0.3s;
   background-color: var(--background-color);
-  color: var(--background-color);
+}
+
+.keys:hover {
+  background-color: var(--key-hover-bg-color);
+}
+
+/* Tackling Display */
+#display-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding: 0 10px;
+  font-size: 5rem;
+}
+
+#display {
+  border-right: 2px gray solid;
+  animation: blinker 1s infinite linear;
+}
+
+@keyframes blinker {
+  0% {
+    border-right: 2px gray solid;
+  }
+  100% {
+    border-right: 0;
+  }
 }
