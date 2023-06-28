@@ -21,16 +21,26 @@ export class Calculator implements HasInitialize {
       this.display.textContent = virtualDisplay;
     };
 
-    const resetValues = (): void => {
+    function resetValues(): void {
       virtualDisplay = "";
       currentPhase = "start";
       startPhaseValue = "";
       endPhaseValue = "";
-    };
+    }
 
-    const runCalculations = (): number => {
+    function delInput(phase: string = "start"): void {
+      if (startPhaseValue.length > 0) {
+        startPhaseValue = startPhaseValue.substring(0, virtualDisplay.length - 1);
+        virtualDisplay = virtualDisplay.substring(0, virtualDisplay.length - 1);
+        updateDisplay();
+      }
+    }
+
+    function runCalculations(): number {
       const lhs: number = parseInt(startPhaseValue.trim()); // lhs -> Left Hand Value
       const rhs: number = parseInt(endPhaseValue.trim()); // rhs -> Right Hand Value
+
+      console.log(startPhaseValue, endPhaseValue);
 
       let result: number = 0;
       switch (operation) {
@@ -67,9 +77,10 @@ export class Calculator implements HasInitialize {
 
       updateDisplay();
       resetValues();
-      return 0;
-    };
+      return result;
+    }
 
+    // Event Listeners
     this.allKeysDisplay.normalKeys.forEach((key) => {
       key.addEventListener("click", () => {
         const keyContent: string = key.textContent!;
@@ -87,10 +98,20 @@ export class Calculator implements HasInitialize {
       key.addEventListener("click", () => {
         if (currentPhase === "start") {
           const operationType: string = key.textContent!;
-          virtualDisplay += ` ${operationType} `;
-          updateDisplay(); // update display
-          currentPhase = "final";
-          operation = operationType;
+          switch (operationType) {
+            case "=":
+              return;
+            case "DEL":
+              delInput(startPhaseValue);
+              break;
+            default:
+              virtualDisplay += ` ${operationType} `;
+              updateDisplay(); // update display
+              console.log("start phase value: " + startPhaseValue);
+              currentPhase = "final";
+              operation = operationType;
+              break;
+          }
         } else {
           runCalculations();
         }

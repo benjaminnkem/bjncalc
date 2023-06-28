@@ -12,15 +12,23 @@ export class Calculator {
         const updateDisplay = () => {
             this.display.textContent = virtualDisplay;
         };
-        const resetValues = () => {
+        function resetValues() {
             virtualDisplay = "";
             currentPhase = "start";
             startPhaseValue = "";
             endPhaseValue = "";
-        };
-        const runCalculations = () => {
+        }
+        function delInput(phase = "start") {
+            if (startPhaseValue.length > 0) {
+                startPhaseValue = startPhaseValue.substring(0, virtualDisplay.length - 1);
+                virtualDisplay = virtualDisplay.substring(0, virtualDisplay.length - 1);
+                updateDisplay();
+            }
+        }
+        function runCalculations() {
             const lhs = parseInt(startPhaseValue.trim()); // lhs -> Left Hand Value
             const rhs = parseInt(endPhaseValue.trim()); // rhs -> Right Hand Value
+            console.log(startPhaseValue, endPhaseValue);
             let result = 0;
             switch (operation) {
                 case "/":
@@ -55,8 +63,9 @@ export class Calculator {
             }
             updateDisplay();
             resetValues();
-            return 0;
-        };
+            return result;
+        }
+        // Event Listeners
         this.allKeysDisplay.normalKeys.forEach((key) => {
             key.addEventListener("click", () => {
                 const keyContent = key.textContent;
@@ -74,10 +83,20 @@ export class Calculator {
             key.addEventListener("click", () => {
                 if (currentPhase === "start") {
                     const operationType = key.textContent;
-                    virtualDisplay += ` ${operationType} `;
-                    updateDisplay(); // update display
-                    currentPhase = "final";
-                    operation = operationType;
+                    switch (operationType) {
+                        case "=":
+                            return;
+                        case "DEL":
+                            delInput(startPhaseValue);
+                            break;
+                        default:
+                            virtualDisplay += ` ${operationType} `;
+                            updateDisplay(); // update display
+                            console.log("start phase value: " + startPhaseValue);
+                            currentPhase = "final";
+                            operation = operationType;
+                            break;
+                    }
                 }
                 else {
                     runCalculations();
