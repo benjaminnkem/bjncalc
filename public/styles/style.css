@@ -69,6 +69,9 @@ body {
   place-content: center;
   cursor: default;
   border-radius: 6px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 #part2 div:last-child {
@@ -98,12 +101,12 @@ body {
   align-items: center;
   justify-content: end;
   padding: 0 10px;
-  font-size: 5rem;
+  font-size: 3rem;
 }
 
 #display {
   border-right: 2px gray solid;
-  animation: blinker 1s infinite linear;
+  /* animation: blinker 1s infinite linear; */
 }
 
 @keyframes blinker {

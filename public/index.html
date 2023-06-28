@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/public/styles/style.css" />
     <title>Ben Calculator</title>
   </head>
@@ -10,31 +11,32 @@
     <div id="app">
       <div id="calc-container">
         <div id="display-container">
-          <p id="display">0</p><span id="blinker"></span>
+          <p id="display">0</p>
+          <span id="blinker"></span>
         </div>
         <div id="keys-container">
           <div id="part1">
-            <div class="keys">C</div>
-            <div class="keys">/</div>
-            <div class="keys">x</div>
-            <div class="keys">7</div>
-            <div class="keys">8</div>
-            <div class="keys">9</div>
-            <div class="keys">4</div>
-            <div class="keys">5</div>
-            <div class="keys">6</div>
-            <div class="keys">1</div>
-            <div class="keys">2</div>
-            <div class="keys">3</div>
-            <div class="keys">%</div>
-            <div class="keys">0</div>
-            <div class="keys">.</div>
+            <div class="keys" data-key-clear data-key>C</div>
+            <div class="keys" data-key-divide data-key>/</div>
+            <div class="keys" data-key-multiply data-key>x</div>
+            <div class="keys" data-key-seven data-key>7</div>
+            <div class="keys" data-key-eight data-key>8</div>
+            <div class="keys" data-key-nine data-key>9</div>
+            <div class="keys" data-key-four data-key>4</div>
+            <div class="keys" data-key-five data-key>5</div>
+            <div class="keys" data-key-six data-key>6</div>
+            <div class="keys" data-key-one data-key>1</div>
+            <div class="keys" data-key-two data-key>2</div>
+            <div class="keys" data-key-three data-key>3</div>
+            <div class="keys" data-key-percentage data-key>%</div>
+            <div class="keys" data-key-zero data-key>0</div>
+            <div class="keys" data-key-dot data-key>.</div>
           </div>
           <div id="part2">
-            <div class="keys">DEL</div>
-            <div class="keys">-</div>
-            <div class="keys">+</div>
-            <div class="keys">=</div>
+            <div class="keys" data-key-delete data-key>DEL</div>
+            <div class="keys" data-key-minus data-key>-</div>
+            <div class="keys" data-key-plus data-key>+</div>
+            <div class="keys" data-key-equals data-key>=</div>
           </div>
         </div>
       </div>
