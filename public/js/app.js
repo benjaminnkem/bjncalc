@@ -22,6 +22,5 @@ const mainDisplay = document.querySelector("#display");
 const calculator = new Calculator({
     normalKeys: [clearKey, sevenKey, eightKey, nineKey, fourKey, fiveKey, sixKey, oneKey, twoKey, zeroKey, threeKey],
     specialKeys: [divideKey, percentageKey, dotKey, deleteKey, minusKey, multiplyKey, plusKey, equalsKey],
-    display: mainDisplay,
-});
+}, mainDisplay);
 calculator.initialize();
