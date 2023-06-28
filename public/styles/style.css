@@ -102,6 +102,7 @@ body {
   justify-content: end;
   padding: 0 10px;
   font-size: 3rem;
+  overflow-y: hidden;
 }
 
 #display {

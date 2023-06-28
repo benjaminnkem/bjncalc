@@ -3,16 +3,60 @@ interface HasInitialize {
 }
 
 export class Calculator implements HasInitialize {
-  constructor(private norms: { normalKeys: HTMLDivElement[] }, private special: { specialKeys: HTMLDivElement[] }) {}
+  constructor(
+    private allKeysDisplay: {
+      normalKeys: HTMLDivElement[];
+      specialKeys: HTMLDivElement[];
+      display: HTMLParagraphElement;
+    }
+  ) {}
   initialize(): void {
     let virtualDisplay: string = "";
-    const specialKeys: string[] = ["C", "/", "x", "del", "-", "+", "=", "%", "."];
-    const normalKeys: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+    let currentPhase: string = "start";
+    let startPhaseValue: string = "";
+    let endPhaseValue: string = "";
+    let operation: string = "";
 
-    this.norms.normalKeys.forEach((key) => {
-      console.log(key);
+    function resetValues(): void {
+      virtualDisplay = "";
+      currentPhase = "start";
+      startPhaseValue = "";
+      endPhaseValue = "";
+    }
+
+    function runCalculations(): number {
+      resetValues();
+      console.log("Operation: " + operation);
+      return 0;
+    }
+
+    this.allKeysDisplay.normalKeys.forEach((key) => {
+      key.addEventListener("click", () => {
+        const keyContent: string = key.textContent!;
+        virtualDisplay += keyContent;
+
+        if (currentPhase === "start") {
+          startPhaseValue += keyContent;
+        } else {
+          endPhaseValue += keyContent;
+        }
+
+        console.log([virtualDisplay, startPhaseValue, endPhaseValue]);
+      });
     });
 
-    console.log("I'm coming");
+    this.allKeysDisplay.specialKeys.forEach((key) => {
+      key.addEventListener("click", () => {
+        if (currentPhase === "start") {
+          const operationType: string = key.textContent!;
+          virtualDisplay += ` ${operationType} `;
+          console.log(virtualDisplay);
+          currentPhase = "final";
+          operation = operationType;
+        } else {
+          runCalculations();
+        }
+      });
+    });
   }
 }

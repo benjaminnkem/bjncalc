@@ -1,15 +1,50 @@
 export class Calculator {
-    constructor(norms, special) {
-        this.norms = norms;
-        this.special = special;
+    constructor(allKeysDisplay) {
+        this.allKeysDisplay = allKeysDisplay;
     }
     initialize() {
         let virtualDisplay = "";
-        const specialKeys = ["C", "/", "x", "del", "-", "+", "=", "%", "."];
-        const normalKeys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-        this.norms.normalKeys.forEach((key) => {
-            console.log(key);
+        let currentPhase = "start";
+        let startPhaseValue = "";
+        let endPhaseValue = "";
+        let operation = "";
+        function resetValues() {
+            virtualDisplay = "";
+            currentPhase = "start";
+            startPhaseValue = "";
+            endPhaseValue = "";
+        }
+        function runCalculations() {
+            resetValues();
+            console.log("Operation: " + operation);
+            return 0;
+        }
+        this.allKeysDisplay.normalKeys.forEach((key) => {
+            key.addEventListener("click", () => {
+                const keyContent = key.textContent;
+                virtualDisplay += keyContent;
+                if (currentPhase === "start") {
+                    startPhaseValue += keyContent;
+                }
+                else {
+                    endPhaseValue += keyContent;
+                }
+                console.log([virtualDisplay, startPhaseValue, endPhaseValue]);
+            });
         });
-        console.log("I'm coming");
+        this.allKeysDisplay.specialKeys.forEach((key) => {
+            key.addEventListener("click", () => {
+                if (currentPhase === "start") {
+                    const operationType = key.textContent;
+                    virtualDisplay += ` ${operationType} `;
+                    console.log(virtualDisplay);
+                    currentPhase = "final";
+                    operation = operationType;
+                }
+                else {
+                    runCalculations();
+                }
+            });
+        });
     }
 }
