@@ -18,13 +18,15 @@ export class Calculator implements HasInitialize {
     let operation: string = "";
 
     // For recursive calculations
+    let hasCalculatedOperation: string = "";
     let hasCalculated: boolean = false;
     let hasCalcCounter: number = 0;
-    let hasCalculatedOperation: string = '';
+    let allowOperations: boolean = false;
 
     // For decimals calculations
     let isDecimalCountForPhaseOne: number = 0;
     let isDecimalCountForPhaseTwo: number = 0;
+    let virtualDisplayControlForDecimals: number = 0;
 
     const updateDisplay = (): void => {
       this.display.textContent = virtualDisplay;
@@ -56,9 +58,122 @@ export class Calculator implements HasInitialize {
       }
     }
 
+    // Event Listeners
+    this.allKeysDisplay.normalKeys.forEach((key) => {
+      key.addEventListener("click", () => {
+        allowOperations = true;
+        // Checking if calculation function has been called...
+        hasCalculated = false;
+        hasCalcCounter++;
+
+        // If calculation function has been called, and normal keys are pressed,
+        // Reset the virtual display value back to to the initial value;
+
+        const keyContent: string = key.textContent!;
+        if (!hasCalculated && hasCalcCounter <= 1) {
+          virtualDisplay = `${startPhaseValue} ${hasCalculatedOperation} `; // Resets here
+        }
+
+        function virtualHelper() {
+          // Helper function for updating KeyContent based on the virtualDisplayControlForDecimals
+          virtualDisplay += "";
+          virtualDisplayControlForDecimals++;
+        }
+        if (virtualDisplayControlForDecimals < 2 && isDecimalCountForPhaseOne >= 1) {
+          virtualDisplayControlForDecimals++;
+          virtualDisplay += keyContent === "." ? virtualHelper() : keyContent; // Updating display if KeyContent is not "."
+        } else if (virtualDisplayControlForDecimals <= 2 && isDecimalCountForPhaseTwo >= 1) {
+          virtualDisplay += keyContent === "." ? "" : keyContent;
+        } else {
+          virtualDisplay += keyContent;
+        }
+
+        updateDisplay(); // update display
+        if (currentPhase === "start") {
+          if (keyContent === "." && isDecimalCountForPhaseOne < 1) {
+            isDecimalCountForPhaseOne++;
+            startPhaseValue += ".";
+          } else {
+            if (keyContent !== ".") startPhaseValue += keyContent;
+          }
+        } else {
+          if (keyContent === "." && isDecimalCountForPhaseTwo < 1) {
+            isDecimalCountForPhaseTwo++;
+            endPhaseValue += ".";
+          } else {
+            if (keyContent !== ".") endPhaseValue += keyContent;
+          }
+        }
+      });
+    });
+
+    // Special keys
+    // -- handling multiple operations based on the operation type
+    function handleOperationAndRepeat(operationType: string): void {
+      if (hasCalculated) {
+        operation = operationType;
+        startPhaseValue += virtualDisplay;
+        virtualDisplay += ` ${operationType} `;
+        updateDisplay();
+      } else {
+        virtualDisplay += ` ${operationType} `;
+        updateDisplay(); // update display
+        operation = operationType;
+      }
+      currentPhase = "final";
+    }
+
+    // -- Listening for special keys events
+    this.allKeysDisplay.specialKeys.forEach((key) => {
+      key.addEventListener("click", () => {
+        if (allowOperations) { // Special operations are disabled initially to prevent errors
+          if (currentPhase === "start") {
+            const operationType: string = key.textContent!;
+            hasCalculatedOperation = operationType;
+            switch (operationType) {
+              case "=":
+                return;
+              case "DEL":
+                delInput();
+                break;
+              case "CE":
+                virtualDisplay = "";
+                resetValues();
+                updateDisplay();
+                break;
+              case "/":
+                handleOperationAndRepeat(operationType);
+                break;
+              case "-":
+                handleOperationAndRepeat(operationType);
+                break;
+              case "+":
+                handleOperationAndRepeat(operationType);
+                break;
+              case "x":
+                handleOperationAndRepeat(operationType);
+                break;
+              default:
+                break;
+            }
+          } else {
+            const operationType: string = key.textContent!;
+            hasCalculatedOperation = operationType;
+            switch (operationType) {
+              case "=":
+                runCalculations();
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      });
+    });
+
     function runCalculations() {
-      const lhs: number = parseInt(startPhaseValue.trim()); // lhs -> Left Hand Value
-      const rhs: number = parseInt(endPhaseValue.trim()); // rhs -> Right Hand Value
+      const lhs: number = parseFloat(startPhaseValue.trim()); // lhs -> Left Hand Value
+      const rhs: number = parseFloat(endPhaseValue.trim()); // rhs -> Right Hand Value
 
       let result: number = 0;
       function isResultValid(value: number): void {
@@ -113,105 +228,5 @@ export class Calculator implements HasInitialize {
       updateDisplay();
       resetValues();
     }
-
-    // Event Listeners
-    this.allKeysDisplay.normalKeys.forEach((key) => {
-      key.addEventListener("click", () => {
-        // Checking if calculation function has been called...
-        hasCalculated = false;
-        hasCalcCounter++;
-
-        // If calculation function has been called, and normal keys are pressed,
-        // Reset the virtual display value back to to the initial value;
-
-        const keyContent: string = key.textContent!;
-        if (!hasCalculated && hasCalcCounter <= 1) {
-          virtualDisplay = `${startPhaseValue} ${hasCalculatedOperation} `; // Resets here
-        }
-        if (isDecimalCountForPhaseOne >= 1) {
-          virtualDisplay += ""
-        } else {
-          virtualDisplay += keyContent;
-        }
-        updateDisplay(); // update display
-        if (currentPhase === "start") {
-          if (keyContent === "." && isDecimalCountForPhaseOne < 1) {
-            isDecimalCountForPhaseOne++;
-            startPhaseValue += ".";
-          } else {
-            if (keyContent !== ".") startPhaseValue += keyContent;
-          }
-        } else {
-          if (keyContent === "." && isDecimalCountForPhaseTwo < 1) {
-            isDecimalCountForPhaseTwo++;
-            endPhaseValue += ".";
-          } else {
-            if (keyContent !== ".") endPhaseValue += keyContent;
-          }
-        }
-      });
-    });
-
-    // Special keys
-    // -- handling multiple operations based on the operation type
-    function handleOperationAndRepeat(operationType: string): void {
-      if (hasCalculated) {
-        operation = operationType;
-        startPhaseValue += virtualDisplay;
-        virtualDisplay += ` ${operationType} `;
-        updateDisplay();
-      } else {
-        virtualDisplay += ` ${operationType} `;
-        updateDisplay(); // update display
-        operation = operationType;
-      }
-      currentPhase = "final";
-    }
-
-    // -- Listening for special keys events
-    this.allKeysDisplay.specialKeys.forEach((key) => {
-      key.addEventListener("click", () => {
-        if (currentPhase === "start") {
-          const operationType: string = key.textContent!;
-          hasCalculatedOperation = operationType;
-          switch (operationType) {
-            case "=":
-              return;
-            case "DEL":
-              delInput();
-              break;
-            case "CE":
-              virtualDisplay = "";
-              resetValues();
-              updateDisplay();
-              break;
-            case "/":
-              handleOperationAndRepeat(operationType);
-              break;
-            case "-":
-              handleOperationAndRepeat(operationType);
-              break;
-            case "+":
-              handleOperationAndRepeat(operationType);
-              break;
-            case "x":
-              handleOperationAndRepeat(operationType);
-              break;
-            default:
-              break;
-          }
-        } else {
-          const operationType: string = key.textContent!;
-          hasCalculatedOperation = operationType;
-          switch (operationType) {
-            case "=":
-              runCalculations();
-              break;
-            default:
-              break;
-          }
-        }
-      });
-    });
   }
 }
