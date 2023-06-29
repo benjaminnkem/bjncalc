@@ -126,7 +126,8 @@ export class Calculator implements HasInitialize {
     // -- Listening for special keys events
     this.allKeysDisplay.specialKeys.forEach((key) => {
       key.addEventListener("click", () => {
-        if (allowOperations) { // Special operations are disabled initially to prevent errors
+        if (allowOperations) {
+          // Special operations are disabled initially to prevent errors
           if (currentPhase === "start") {
             const operationType: string = key.textContent!;
             hasCalculatedOperation = operationType;
@@ -153,6 +154,9 @@ export class Calculator implements HasInitialize {
               case "x":
                 handleOperationAndRepeat(operationType);
                 break;
+              case "%":
+                calculatePercent(virtualDisplay);
+                break;
               default:
                 break;
             }
@@ -171,6 +175,19 @@ export class Calculator implements HasInitialize {
       });
     });
 
+    // CALCULATIONS
+    // Find percentage
+    function calculatePercent(value: string): void {
+      const valueAsNumber: number = parseFloat(value);
+      if (isNaN(valueAsNumber)) {
+        virtualDisplay = "Error";
+        return;
+      }
+      virtualDisplay = `${valueAsNumber / 100}`;
+      updateDisplay();
+    }
+
+    // Main calculations
     function runCalculations() {
       const lhs: number = parseFloat(startPhaseValue.trim()); // lhs -> Left Hand Value
       const rhs: number = parseFloat(endPhaseValue.trim()); // rhs -> Right Hand Value

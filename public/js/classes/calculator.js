@@ -117,7 +117,8 @@ export class Calculator {
         // -- Listening for special keys events
         this.allKeysDisplay.specialKeys.forEach((key) => {
             key.addEventListener("click", () => {
-                if (allowOperations) { // Special operations are disabled initially to prevent errors
+                if (allowOperations) {
+                    // Special operations are disabled initially to prevent errors
                     if (currentPhase === "start") {
                         const operationType = key.textContent;
                         hasCalculatedOperation = operationType;
@@ -144,6 +145,9 @@ export class Calculator {
                             case "x":
                                 handleOperationAndRepeat(operationType);
                                 break;
+                            case "%":
+                                calculatePercent(virtualDisplay);
+                                break;
                             default:
                                 break;
                         }
@@ -162,6 +166,18 @@ export class Calculator {
                 }
             });
         });
+        // CALCULATIONS
+        // Find percentage
+        function calculatePercent(value) {
+            const valueAsNumber = parseFloat(value);
+            if (isNaN(valueAsNumber)) {
+                virtualDisplay = "Error";
+                return;
+            }
+            virtualDisplay = `${valueAsNumber / 100}`;
+            updateDisplay();
+        }
+        // Main calculations
         function runCalculations() {
             const lhs = parseFloat(startPhaseValue.trim()); // lhs -> Left Hand Value
             const rhs = parseFloat(endPhaseValue.trim()); // rhs -> Right Hand Value
