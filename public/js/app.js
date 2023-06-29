@@ -24,3 +24,8 @@ const calculator = new Calculator({
     specialKeys: [divideKey, percentageKey, dotKey, deleteKey, minusKey, multiplyKey, plusKey, equalsKey, clearKey],
 }, mainDisplay);
 calculator.initialize();
+/**
+ * TODO:
+ *   -  Fix the DEL key functionality.
+ *   -  Fix the display of results after consecutive operations.
+ */

@@ -33,15 +33,25 @@ export class Calculator implements HasInitialize {
     }
 
     // Removing inputs from the end of the current phase value
-    function delInput(phase: string = "start"): void {
-      if (startPhaseValue.length > 0) {
-        startPhaseValue = startPhaseValue.substring(0, virtualDisplay.length - 1);
-        virtualDisplay = virtualDisplay.substring(0, virtualDisplay.length - 1);
-        updateDisplay();
+    function delInput(): void {
+      if (currentPhase === "start") {
+        if (startPhaseValue.length > 0) {
+          startPhaseValue = startPhaseValue.substring(0, virtualDisplay.length - 1);
+          virtualDisplay = virtualDisplay.substring(0, virtualDisplay.length - 1);
+          updateDisplay();
+        }
+      } else if (currentPhase === "final") {
+        if (endPhaseValue.length > 0) {
+          endPhaseValue = endPhaseValue.substring(0, virtualDisplay.length - 1);
+          virtualDisplay += endPhaseValue;
+          updateDisplay();
+        }
+      } else {
+        return;
       }
     }
 
-    function runCalculations(): number {
+    function runCalculations() {
       const lhs: number = parseInt(startPhaseValue.trim()); // lhs -> Left Hand Value
       const rhs: number = parseInt(endPhaseValue.trim()); // rhs -> Right Hand Value
 
@@ -50,7 +60,6 @@ export class Calculator implements HasInitialize {
         if (isNaN(value)) {
           currentPhase = "start";
           startPhaseValue = value.toString();
-          console.log(startPhaseValue, value);
         } else {
           virtualDisplay = result.toString();
         }
@@ -74,6 +83,9 @@ export class Calculator implements HasInitialize {
           break;
         case "=":
           break;
+        case "DEL":
+          delInput();
+          break;
         case "CE":
           virtualDisplay = "";
           resetValues();
@@ -91,7 +103,6 @@ export class Calculator implements HasInitialize {
       hasCalcCounter = 0;
       updateDisplay();
       resetValues();
-      return result;
     }
 
     // Event Listeners
@@ -126,13 +137,12 @@ export class Calculator implements HasInitialize {
         startPhaseValue += virtualDisplay;
         virtualDisplay += ` ${operationType} `;
         updateDisplay();
-        currentPhase = "final";
       } else {
         virtualDisplay += ` ${operationType} `;
         updateDisplay(); // update display
-        currentPhase = "final";
         operation = operationType;
       }
+      currentPhase = "final";
     }
 
     // Listening for special keys events
@@ -144,7 +154,7 @@ export class Calculator implements HasInitialize {
             case "=":
               return;
             case "DEL":
-              delInput(startPhaseValue);
+              delInput();
               break;
             case "CE":
               virtualDisplay = "";

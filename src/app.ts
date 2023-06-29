@@ -31,3 +31,9 @@ const calculator = new Calculator(
 );
 
 calculator.initialize();
+
+/**
+ * TODO:
+ *   -  Fix the DEL key functionality.
+ *   -  Fix the display of results after consecutive operations.
+ */
