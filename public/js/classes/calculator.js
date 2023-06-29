@@ -12,6 +12,10 @@ export class Calculator {
         // For recursive calculations
         let hasCalculated = false;
         let hasCalcCounter = 0;
+        let hasCalculatedOperation = '';
+        // For decimals calculations
+        let isDecimalCountForPhaseOne = 0;
+        let isDecimalCountForPhaseTwo = 0;
         const updateDisplay = () => {
             this.display.textContent = virtualDisplay;
         };
@@ -78,6 +82,8 @@ export class Calculator {
                     break;
                 case "CE":
                     virtualDisplay = "";
+                    isDecimalCountForPhaseOne = 0;
+                    isDecimalCountForPhaseTwo = 0;
                     resetValues();
                     updateDisplay();
                     break;
@@ -90,6 +96,7 @@ export class Calculator {
             }
             hasCalculated = true;
             hasCalcCounter = 0;
+            hasCalculatedOperation = operation;
             updateDisplay();
             resetValues();
         }
@@ -103,15 +110,34 @@ export class Calculator {
                 // Reset the virtual display value back to to the initial value;
                 const keyContent = key.textContent;
                 if (!hasCalculated && hasCalcCounter <= 1) {
-                    virtualDisplay = ""; // Resets here
+                    virtualDisplay = `${startPhaseValue} ${hasCalculatedOperation} `; // Resets here
                 }
-                virtualDisplay += keyContent;
-                updateDisplay(); // update display
-                if (currentPhase === "start") {
-                    startPhaseValue += keyContent;
+                if (isDecimalCountForPhaseOne >= 1) {
+                    virtualDisplay += "";
                 }
                 else {
-                    endPhaseValue += keyContent;
+                    virtualDisplay += keyContent;
+                }
+                updateDisplay(); // update display
+                if (currentPhase === "start") {
+                    if (keyContent === "." && isDecimalCountForPhaseOne < 1) {
+                        isDecimalCountForPhaseOne++;
+                        startPhaseValue += ".";
+                    }
+                    else {
+                        if (keyContent !== ".")
+                            startPhaseValue += keyContent;
+                    }
+                }
+                else {
+                    if (keyContent === "." && isDecimalCountForPhaseTwo < 1) {
+                        isDecimalCountForPhaseTwo++;
+                        endPhaseValue += ".";
+                    }
+                    else {
+                        if (keyContent !== ".")
+                            endPhaseValue += keyContent;
+                    }
                 }
             });
         });
@@ -131,11 +157,12 @@ export class Calculator {
             }
             currentPhase = "final";
         }
-        // Listening for special keys events
+        // -- Listening for special keys events
         this.allKeysDisplay.specialKeys.forEach((key) => {
             key.addEventListener("click", () => {
                 if (currentPhase === "start") {
                     const operationType = key.textContent;
+                    hasCalculatedOperation = operationType;
                     switch (operationType) {
                         case "=":
                             return;
@@ -164,7 +191,15 @@ export class Calculator {
                     }
                 }
                 else {
-                    runCalculations();
+                    const operationType = key.textContent;
+                    hasCalculatedOperation = operationType;
+                    switch (operationType) {
+                        case "=":
+                            runCalculations();
+                            break;
+                        default:
+                            break;
+                    }
                 }
             });
         });

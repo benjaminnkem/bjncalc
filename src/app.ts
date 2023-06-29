@@ -24,8 +24,8 @@ const mainDisplay = document.querySelector("#display") as HTMLParagraphElement;
 
 const calculator = new Calculator(
   {
-    normalKeys: [sevenKey, eightKey, nineKey, fourKey, fiveKey, sixKey, oneKey, twoKey, zeroKey, threeKey],
-    specialKeys: [divideKey, percentageKey, dotKey, deleteKey, minusKey, multiplyKey, plusKey, equalsKey, clearKey],
+    normalKeys: [sevenKey, eightKey, nineKey, fourKey, fiveKey, sixKey, oneKey, twoKey, zeroKey, threeKey, dotKey],
+    specialKeys: [divideKey, percentageKey, deleteKey, minusKey, multiplyKey, plusKey, equalsKey, clearKey],
   },
   mainDisplay
 );

@@ -20,6 +20,11 @@ export class Calculator implements HasInitialize {
     // For recursive calculations
     let hasCalculated: boolean = false;
     let hasCalcCounter: number = 0;
+    let hasCalculatedOperation: string = '';
+
+    // For decimals calculations
+    let isDecimalCountForPhaseOne: number = 0;
+    let isDecimalCountForPhaseTwo: number = 0;
 
     const updateDisplay = (): void => {
       this.display.textContent = virtualDisplay;
@@ -88,6 +93,8 @@ export class Calculator implements HasInitialize {
           break;
         case "CE":
           virtualDisplay = "";
+          isDecimalCountForPhaseOne = 0;
+          isDecimalCountForPhaseTwo = 0;
           resetValues();
           updateDisplay();
           break;
@@ -101,6 +108,8 @@ export class Calculator implements HasInitialize {
 
       hasCalculated = true;
       hasCalcCounter = 0;
+      hasCalculatedOperation = operation;
+
       updateDisplay();
       resetValues();
     }
@@ -117,14 +126,28 @@ export class Calculator implements HasInitialize {
 
         const keyContent: string = key.textContent!;
         if (!hasCalculated && hasCalcCounter <= 1) {
-          virtualDisplay = ""; // Resets here
+          virtualDisplay = `${startPhaseValue} ${hasCalculatedOperation} `; // Resets here
         }
-        virtualDisplay += keyContent;
+        if (isDecimalCountForPhaseOne >= 1) {
+          virtualDisplay += ""
+        } else {
+          virtualDisplay += keyContent;
+        }
         updateDisplay(); // update display
         if (currentPhase === "start") {
-          startPhaseValue += keyContent;
+          if (keyContent === "." && isDecimalCountForPhaseOne < 1) {
+            isDecimalCountForPhaseOne++;
+            startPhaseValue += ".";
+          } else {
+            if (keyContent !== ".") startPhaseValue += keyContent;
+          }
         } else {
-          endPhaseValue += keyContent;
+          if (keyContent === "." && isDecimalCountForPhaseTwo < 1) {
+            isDecimalCountForPhaseTwo++;
+            endPhaseValue += ".";
+          } else {
+            if (keyContent !== ".") endPhaseValue += keyContent;
+          }
         }
       });
     });
@@ -145,11 +168,12 @@ export class Calculator implements HasInitialize {
       currentPhase = "final";
     }
 
-    // Listening for special keys events
+    // -- Listening for special keys events
     this.allKeysDisplay.specialKeys.forEach((key) => {
       key.addEventListener("click", () => {
         if (currentPhase === "start") {
           const operationType: string = key.textContent!;
+          hasCalculatedOperation = operationType;
           switch (operationType) {
             case "=":
               return;
@@ -177,7 +201,15 @@ export class Calculator implements HasInitialize {
               break;
           }
         } else {
-          runCalculations();
+          const operationType: string = key.textContent!;
+          hasCalculatedOperation = operationType;
+          switch (operationType) {
+            case "=":
+              runCalculations();
+              break;
+            default:
+              break;
+          }
         }
       });
     });
